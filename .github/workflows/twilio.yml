@@ -1,0 +1,48 @@
+name: Twilio Workflow
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      choice:
+        description: 'Select an option: 1. Buy, 2. View Numbers, 3. View SMS, 4. Exit'
+        required: true
+        default: '2'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+      twilio_sid:
+        description: 'Enter your Twilio Account SID'
+        required: true
+      twilio_token:
+        description: 'Enter your Twilio Auth Token'
+        required: true
+
+jobs:
+  twilio-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          npm install twilio readline
+
+      - name: Run Twilio Script
+        env:
+          # Use inputs from the manual trigger or secrets for push
+          TWILIO_ACCOUNT_SID: ${{ github.event.inputs.twilio_sid || secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ github.event.inputs.twilio_token || secrets.TWILIO_AUTH_TOKEN }}
+          USER_CHOICE: ${{ github.event.inputs.choice || '2' }}
+        run: node twilio_cli.js
