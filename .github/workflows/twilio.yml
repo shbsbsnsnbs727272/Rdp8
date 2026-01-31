@@ -1,0 +1,44 @@
+name: twilio-workflows
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  twilio-job:
+    runs-on: ubuntu-latest
+    description: |
+      Select an option:
+      1. Buy a new Twilio number
+      2. View my Twilio phone number
+      3. View recent SMS logs
+      4. Exit
+
+      Enter your choice:
+      Enter your Twilio Account SID:
+      Enter your Twilio Auth Token:
+
+      To set up job:
+      - Install dependencies (twilio, readline)
+      - Run Node.js script: node twilio_cli.js
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          npm install twilio
+          npm install readline
+
+      - name: Run Twilio CLI script
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+        run: node twilio_cli.js
